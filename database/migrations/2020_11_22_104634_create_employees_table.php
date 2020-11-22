@@ -22,11 +22,11 @@ class CreateEmployeesTable extends Migration
             $table->string('email')->unique();
             $table->integer('salary');
             $table->unsignedBigInteger('photo_id');
-            $table->unsignedBigInteger('admin_created_at_id');
-            $table->unsignedBigInteger('admin_updated_at_id');
+            $table->unsignedBigInteger('admin_created_at_id')->nullable();
+            $table->unsignedBigInteger('admin_updated_at_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('position_id')->references('id')->on('positions');
+            $table->foreign('position_id')->references('id')->on('positions')->onUpdate('cascade');
             $table->foreign('photo_id')->references('id')->on('photos');
             $table->foreign('admin_created_at_id')->references('id')->on('users');
             $table->foreign('admin_updated_at_id')->references('id')->on('users');
