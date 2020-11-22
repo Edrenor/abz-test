@@ -1,0 +1,58 @@
+version: '3'
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: abz_test_laravel
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/app
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  #Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: abz_test_nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8080:8080"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+    depends_on:
+      - app
+      - db
+
+  db:
+    image: mysql:5.7
+    container_name: abz_test_mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: nopassword
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: root
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
