@@ -1,9 +1,14 @@
 FROM php:7.3-fpm
-RUN apt-get update -y && apt-get install -y libmcrypt-dev openssl libpq-dev
+COPY composer.lock composer.json /var/www/
 
-RUN docker-php-ext-install pdo pdo_pgsql mbstring
+RUN apt-get update -y && apt-get install -y libmcrypt-dev openssl libpq-dev libfreetype6-dev libpng-dev libjpeg62-turbo-dev jpegoptim optipng pngquant gifsicle libzip-dev
+
+RUN docker-php-ext-install pdo pdo_mysql zip exif pcntl
+RUN docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/
+RUN docker-php-ext-install gd
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN docker-php-ext-install pdo pdo_pgsql mbstring
+RUN docker-php-ext-install pdo pdo_mysql
 WORKDIR /app
 COPY . /app
 RUN composer install
